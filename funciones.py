@@ -29,6 +29,8 @@ def local_calificacion(ruta_archivo):
     
     #)
 
+    df_long = df_long.drop_duplicates(subset=['departamento', 'municipio', 'poblacion','fecha'])
+
     
     print(df_long.head)
 
@@ -48,13 +50,22 @@ def global_calificacion(ruta_archivo):
     df = df[columnas]
 
     # Convertir los tipos de datos
-    df['Date_reported'] = pd.to_datetime(df['Date_reported'])
+    #df['Date_reported'] = pd.to_datetime(df['Date_reported'])
+    df['Date_reported'] = df['Date_reported'].astype(str)
     df['Country'] = df['Country'].astype(str)
     df['WHO_region'] = df['WHO_region'].astype(str)
-    df['New_cases'] = pd.to_numeric(df['New_cases'], errors='coerce')
-    df['Cumulative_cases'] = pd.to_numeric(df['Cumulative_cases'], errors='coerce')
-    df['New_deaths'] = pd.to_numeric(df['New_deaths'], errors='coerce')
-    df['Cumulative_deaths'] = pd.to_numeric(df['Cumulative_deaths'], errors='coerce')
+
+    var0 = (df['New_cases'].astype(str)).str.replace('/', '')
+    df['New_cases'] = pd.to_numeric(var0, errors='coerce')
+
+    var1 = (df['Cumulative_cases'].astype(str)).str.replace('/', '')
+    df['Cumulative_cases'] = pd.to_numeric(var1, errors='coerce')
+
+    var2 = (df['New_deaths'].astype(str)).str.replace('/', '')
+    df['New_deaths'] = pd.to_numeric(var2, errors='coerce')
+
+    var3 = (df['Cumulative_deaths'].astype(str)).str.replace('/', '')
+    df['Cumulative_deaths'] = pd.to_numeric(var3, errors='coerce')
 
     # Eliminar filas duplicadas basadas en las columnas especificadas
     df = df.drop_duplicates(subset=['Date_reported', 'Country', 'WHO_region'])

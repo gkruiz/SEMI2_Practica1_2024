@@ -23,26 +23,31 @@ class DB:
 
 
  
-    global mydb
-    global mycursor
+    
+    
     # Datos de conexión (reemplaza con tus credenciales)
-    mydb = mysql.connector.connect(
-    host=hostG,
-    user=userG,
-    password=passwordG,
-    database=databaseG
-    )
 
-    mycursor = mydb.cursor()
+    def start():
+        global mycursor
+        global mydb
+
+        mydb = mysql.connector.connect(
+        host=hostG,
+        user=userG,
+        password=passwordG,
+        database=databaseG
+        )
+
+        mycursor = mydb.cursor()
 
 
 
 
-
+    
     def query (query,parametros):
 
-
-
+        global mycursor
+        
     # Crear un cursor
         
         # Consulta con parámetros
@@ -63,10 +68,17 @@ class DB:
     
 
 
-    def fin():
+    def save():
+        global mydb
 
         mydb.commit()
-        # Cerrar la conexión
+     
+
+
+
+    def fin():
+        global mydb
+        
         mydb.close()
 
 

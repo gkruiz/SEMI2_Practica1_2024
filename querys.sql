@@ -25,7 +25,7 @@ CREATE TABLE pais(
 );
 
 CREATE TABLE global (
-	Date_reported DATE NOT NULL,
+	Date_reported varchar(50) NOT NULL,
     id_pais INT NOT NULL, #LLAVE FORANEA
     WHO_region varchar (10) NOT NULL,
     New_cases INT NOT NULL,
@@ -46,34 +46,41 @@ CREATE TABLE local(
     FOREIGN KEY (id_pais) REFERENCES pais(id_pais)
 );
 
+
+
+
 CALL new_pais('aglg');
 
 select * from pais
 
-drop procedure new_pais;
-
 DELIMITER &&  
 CREATE PROCEDURE new_pais (IN paisp varchar(100))
        BEGIN
-         INSERT INTO pais(nombre)VALUES(@pais);
+         INSERT INTO pais(nombre)VALUES(paisp);
 END &&  
 DELIMITER ;   
 
 
+
+
+DROP PROCEDURE new_global;
+
 DELIMITER &&  
 CREATE PROCEDURE new_global (
-	IN Date_reported DATE ,
-	IN id_pais INT,
-    IN WHO_region varchar(10) ,
+	IN Date_reported VARCHAR(50) ,
+    IN Country VARCHAR(100) ,
+	#IN id_pais INT,
+    IN WHO_region VARCHAR(10) ,
     IN New_cases INT ,
     IN Cumulative_cases INT ,
     IN New_deaths INT ,
     IN Cumulative_deaths INT 
 )
        BEGIN
+       
          INSERT INTO global VALUES(
          	Date_reported ,
-			id_pais,
+			(select id_pais from pais WHERE nombre = Country limit 1) ,#id_pais,
 			WHO_region ,
 			New_cases ,
 			Cumulative_cases ,
@@ -83,6 +90,10 @@ CREATE PROCEDURE new_global (
 END &&  
 DELIMITER ;   
 
+
+
+
+select count(* ) from local;
 
 DELIMITER &&  
 CREATE PROCEDURE new_local (
@@ -105,8 +116,11 @@ CREATE PROCEDURE new_local (
 END &&  
 DELIMITER ;   
 
+ select * from global;
  
-
+truncate table pais;
+truncate table global; 
+truncate table local;
 
 
 

@@ -20,11 +20,20 @@ def menu():
     catalogo=list()
     local_datos=list()
 
+    var= "/8"
+
+    var=var.replace("/", "")
+    print(var)
+
     while True:
+        print("--------------------------------------------------------------")
+        print("---------------------SEMINARIO DE SISTEMAS 2------------------")
+        print("---------------------KEVIN RUIZ 9----------------------------")
+        print("--------------------------------------------------------------")
         print("Seleccione una opcion *")
         print("1) REVISION Y UNION EXCELES")
         print("2) CARGA MASIVA BLOQUES")
-        
+        print("3) Salir X")
 
         valor = input() 
 
@@ -40,29 +49,54 @@ def menu():
 
         elif valor == '2' :
 
-            #CARGA CATALOGO PAISES
-            '''
+
+
+
+            #CARGA CATALOGO PAISES            
+            print("CARGA PARTE 1")
             i=0
+            conexion = base.DB
+            conexion.start()
+ 
             while catalogo.size>i :
 
                 sql = "CALL new_pais( %s )"
                 val = [catalogo.iloc[i]['Country']]
-                base.query(sql,val)
+                #base.query(sql,val)
+
+                conexion.query(sql,val)
 
                 i=i+1
-            '''
+
+            conexion.save()
+            conexion.fin()
+
+
+
+            
 
             #SELECCIONA EL PAIS GUATEMALA PARA ENLAZAR NUEVA INFO
             sqlT = "SELECT id_pais FROM pais WHERE nombre = 'guatemala';"
-            result = base.query(sqlT,[])
-            
+            conexion = base.DB
+            conexion.start()
+            result = conexion.query(sqlT,[])
+            conexion.save()
+            conexion.fin()
             id_gt = result[0][0]
             print(id_gt)
 
 
-            
+
+
+            #INICIA CARGA DE LOCAL Y ESPACIADO 
+            print("CARGA PARTE 2")
+            valorx = input() 
+
             i=0
-            while local_datos.size>i :
+            conexion2 = base.DB
+            conexion2.start()
+            #while local_datos.size>i :
+            while 50300>i :
                 sql = "CALL new_local (%s,%s,%s,%s,%s,%s);"
                 ts=local_datos.iloc[i]
 
@@ -79,28 +113,67 @@ def menu():
                     ]
  
                 print(lista)
-                base.query(sql,lista)
 
-                #local_datos.size%10 == 0
+                result = conexion2.query(sql,lista)
+
                 if i%50000 == 0 :
-                    print("50k registros guardados ,presione para continuarl")
+                    print("50k registros guardados ,presione para continuar")
+                    conexion2.save()
                     valorx = input() 
+                    
+                i=i+1
+
+            conexion2.fin()
+            
+
+
+
+
+
+            #INICIA CARGA DE GLOBAL ESPACIADO TAMBIEN 
+            print("CARGA PARTE 3")
+            valorx = input() 
+
+            i=0
+            conexion2 = base.DB
+            conexion2.start()
+            #while global_datos.size>i :
+            while 50300>i :
+                sql = "CALL new_global (%s,%s,%s,%s,%s,%s,%s)";
+                ts=global_datos.iloc[i]
+                #SI DA ERROR AQUI SE PUEDE VER
+                #print(ts)
+
+
+                lista = [
+                        ts["Date_reported"] , 
+                        ts["Country"] , 
+                        ts["WHO_region"] ,
+                        int(ts["New_cases"]) ,
+                        int(ts["Cumulative_cases"]) ,
+                        int(ts["New_deaths"]),
+                        int(ts["Cumulative_deaths"])
+                    ]
+ 
+                print(lista)
+
+                result = conexion2.query(sql,lista)
+
+                if i%50000 == 0 :
+                    print("50k registros guardados ,presione para continuar")
+                    conexion2.save()
+                    valorx = input() 
+                    
 
                 i=i+1
 
+            conexion2.fin()
 
-
-
-            '''
-            i=0
-            while global_datos.size<i :
-                sql = "CALL new_global (%s,%s,%s,%s,%s,%s,%s);"
-                base.query(sql,global_datos[i])
-            '''
+             
 
         elif valor == '3' :
 
-            base.printP()
+            exit()
 
 
 
