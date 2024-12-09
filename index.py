@@ -33,7 +33,8 @@ def menu():
         print("Seleccione una opcion *")
         print("1) REVISION Y UNION EXCELES")
         print("2) CARGA MASIVA BLOQUES")
-        print("3) Salir X")
+        print("3) UNION DATAFRAMES")
+        print("4) Salir X")
 
         valor = input() 
 
@@ -169,9 +170,13 @@ def menu():
 
             conexion2.fin()
 
-             
 
         elif valor == '3' :
+
+            print("algo")
+
+
+        elif valor == '4' :
 
             exit()
 

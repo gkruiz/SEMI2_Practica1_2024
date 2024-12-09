@@ -13,11 +13,14 @@ create database PRACTICA1;
 
 use PRACTICA1;
 
-DROP TABLE pais;
-DROP TABLE global;
-DROP TABLE local;
 
 
+
+
+
+
+
+#INICIA CREACION DE TABLAS
 
 CREATE TABLE pais(
 	id_pais INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -48,20 +51,32 @@ CREATE TABLE local(
 
 
 
+#PROCEDURE PARA GUARDAR LA INFO DE NUEVO PAIS 
 
-CALL new_pais('aglg');
-
-select * from pais
+DROP PROCEDURE new_pais;
 
 DELIMITER &&  
 CREATE PROCEDURE new_pais (IN paisp varchar(100))
        BEGIN
-         INSERT INTO pais(nombre)VALUES(paisp);
+		DECLARE EXIT HANDLER FOR SQLEXCEPTION
+		BEGIN
+			ROLLBACK;
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error inserting user';
+			END;
+		START TRANSACTION;
+        
+		INSERT INTO pais(nombre)VALUES(paisp);
+        
+        COMMIT;
 END &&  
 DELIMITER ;   
 
+select * from pais
+truncate table pais
 
 
+
+#PROCEDURE PARA GUARDAR INFO GLOBAL DATA 
 
 DROP PROCEDURE new_global;
 
@@ -93,7 +108,6 @@ DELIMITER ;
 
 
 
-select count(* ) from local;
 
 DELIMITER &&  
 CREATE PROCEDURE new_local (
@@ -116,11 +130,24 @@ CREATE PROCEDURE new_local (
 END &&  
 DELIMITER ;   
 
- select count(*) from global;
+
+
+#INICIAN SELECTS
+
+select count(*) from global;
+select count(*) from local ;
+select count(*) from pais;
+ 
+
+
+#QUERYS DE ELIMINACION Y BORRAR
  
 truncate table pais;
 truncate table global; 
 truncate table local;
 
 
+DROP TABLE pais;
+DROP TABLE global;
+DROP TABLE local;
 

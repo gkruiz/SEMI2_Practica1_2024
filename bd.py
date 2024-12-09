@@ -67,6 +67,13 @@ class DB:
         return myresult
     
 
+    def roll():
+        global mydb
+
+        mydb.rollback()
+
+
+
 
     def save():
         global mydb

@@ -15,7 +15,7 @@ def local_calificacion(ruta_archivo):
                  var_name='fecha', 
                  value_name='valor'
                  )
-    print(df_long.head)
+    #print(df_long.head)
 
     df_long['fecha'] = pd.to_datetime(df_long['fecha'], format='%m/%d/%y' ,errors='coerce').fillna(
         pd.to_datetime(df_long['fecha'], format='%m/%d/%Y',errors='coerce')
@@ -37,6 +37,9 @@ def local_calificacion(ruta_archivo):
 
     return df_long
 
+
+
+
  
 
 
@@ -49,9 +52,16 @@ def global_calificacion(ruta_archivo):
     columnas = ['Date_reported', 'Country', 'WHO_region', 'New_cases', 'Cumulative_cases', 'New_deaths', 'Cumulative_deaths']
     df = df[columnas]
 
+    filtro = df['Country'] == "Guatemala"
+    df = df[filtro]
+
     # Convertir los tipos de datos
     #df['Date_reported'] = pd.to_datetime(df['Date_reported'])
-    df['Date_reported'] = df['Date_reported'].astype(str)
+    #df['Date_reported'] = df['Date_reported'].astype(str)
+    df['Date_reported'] = pd.to_datetime(df['Date_reported'], format='%m/%d/%y' ,errors='coerce').fillna(
+        pd.to_datetime(df['Date_reported'], format='%m/%d/%Y',errors='coerce')
+    )
+
     df['Country'] = df['Country'].astype(str)
     df['WHO_region'] = df['WHO_region'].astype(str)
 
@@ -69,6 +79,15 @@ def global_calificacion(ruta_archivo):
 
     # Eliminar filas duplicadas basadas en las columnas especificadas
     df = df.drop_duplicates(subset=['Date_reported', 'Country', 'WHO_region'])
+
+    fecha_inicio = '2020-01-01'
+    fecha_fin = '2020-12-31'
+    rango_fechas = pd.date_range(start=fecha_inicio, end=fecha_fin)
+    df_filtrado = df[df['Date_reported'].isin(rango_fechas)]
+
+    print(df_filtrado.head)#1414
+  
+
 
     return df
 
@@ -93,6 +112,11 @@ def paises(ruta_archivo):
 
 
 
+
+
+def unionDF():
+
+    print("HACE LA UNION")
 
 # Ejemplo de uso
 #ruta_archivo = "mis_datos.xlsx"  # Reemplaza con la ruta de tu archivo
