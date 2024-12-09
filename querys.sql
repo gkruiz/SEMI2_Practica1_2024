@@ -116,7 +116,7 @@ CREATE PROCEDURE new_local (
 END &&  
 DELIMITER ;   
 
- select * from global;
+ select count(*) from global;
  
 truncate table pais;
 truncate table global; 
