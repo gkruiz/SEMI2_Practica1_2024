@@ -1,4 +1,6 @@
 import datetime
+
+import requests
 import bd as base
 import funciones as fun
 
@@ -41,7 +43,15 @@ def menu():
 
 
         if valor == '1' :
-            
+            # URL del archivo CSV
+            url = 'https://drive.usercontent.google.com/download?id=1xfCvIEQBBaPsarDUygIms6kt4ebZXp__&export=download&authuser=0'  # Reemplaza con la URL real
+
+            # Nombre del archivo local donde se guardará
+            nombre_archivo = 'Archivos/global_calificacion.csv'
+
+            # Descargar el archivo
+            response = requests.get(url)
+            open(nombre_archivo, 'wb').write(response.content)
 
             global_datos = fun.global_calificacion(rutaG)
             catalogo = fun.paises(rutaG)
