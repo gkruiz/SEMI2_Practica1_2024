@@ -1,5 +1,7 @@
+import copy
 import datetime
 
+import pandas as pd
 import requests
 import bd as base
 import funciones as fun
@@ -34,8 +36,9 @@ def menu():
         print("--------------------------------------------------------------")
         print("Seleccione una opcion *")
         print("1) REVISION Y UNION EXCELES")
-        print("2) CARGA MASIVA BLOQUES")
-        print("3) UNION DATAFRAMES")
+        print("2) UNION DATAFRAMES")
+        print("3) CARGA MASIVA BLOQUES")
+        
         print("4) Salir X")
 
         valor = input() 
@@ -54,111 +57,119 @@ def menu():
             open(nombre_archivo, 'wb').write(response.content)
 
             global_datos = fun.global_calificacion(rutaG)
-            catalogo = fun.paises(rutaG)
-
             local_datos = fun.local_calificacion(rutaL)
 
-        elif valor == '2' :
+
+            globalT=copy.deepcopy(global_datos)
+            localT=copy.deepcopy(local_datos)
+
+            catalogo = fun.fechas1(globalT , localT)
 
 
 
+        elif valor == '3' :
 
-            #CARGA CATALOGO PAISES            
-            print("CARGA PARTE 1")
+
+            
+
+            #CARGA CATALOGO FECHAS            
+            #print("CARGA PARTE 1")
             i=0
             conexion = base.DB
             conexion.start()
  
             while catalogo.size>i :
 
-                sql = "CALL new_pais( %s )"
-                val = [catalogo.iloc[i]['Country']]
-                #base.query(sql,val)
+                sql = "CALL new_fecha( %s )"
 
+                fecha_solo_fecha = catalogo.iloc[i]['fecha'].date()
+                fecha_str = fecha_solo_fecha.strftime('%Y-%m-%d')
+                
+                val = [fecha_str]
+
+                #try:
                 conexion.query(sql,val)
+                #except:
+                #    print("Something else went wrong") 
+                #    conexion.roll()
 
                 i=i+1
 
             conexion.save()
             conexion.fin()
 
-
+        
 
             
 
-            #SELECCIONA EL PAIS GUATEMALA PARA ENLAZAR NUEVA INFO
-            sqlT = "SELECT id_pais FROM pais WHERE nombre = 'guatemala';"
-            conexion = base.DB
-            conexion.start()
-            result = conexion.query(sqlT,[])
-            conexion.save()
-            conexion.fin()
-            id_gt = result[0][0]
-            print(id_gt)
-
-
-
-
             #INICIA CARGA DE LOCAL Y ESPACIADO 
-            print("CARGA PARTE 2")
-            valorx = input() 
+            #print("CARGA PARTE 2")
+            #valorx = input() 
 
             i=0
             conexion2 = base.DB
             conexion2.start()
             #while local_datos.size>i :
-            while 50300>i :
-                sql = "CALL new_local (%s,%s,%s,%s,%s,%s);"
+            while len(local_datos)>i :
+                sql = "CALL new_local (%s,%s,%s,%s,%s);"
                 ts=local_datos.iloc[i]
 
                 fecha_solo_fecha = ts["fecha"].date()
                 fecha_str = fecha_solo_fecha.strftime('%Y-%m-%d')
 
                 lista = [
-                        int(id_gt) , 
+                        #int(id_gt) , 
+                        fecha_str ,
                         ts["departamento"] ,
                         ts["municipio"] ,
                         int(ts["poblacion"]) ,
-                        fecha_str ,
                         int(ts["valor"])
                     ]
  
-                print(lista)
+                #print(lista)
 
-                result = conexion2.query(sql,lista)
+                #try:
+                conexion2.query(sql,lista)
+                #except:
+                #    print("Error en grupo:"+str(int(i/50))+" , Linea: "+str(i)) 
+                #    conexion2.roll()
 
-                if i%50000 == 0 :
-                    print("50k registros guardados ,presione para continuar")
-                    conexion2.save()
-                    valorx = input() 
+ 
                     
                 i=i+1
 
+            conexion2.save()
             conexion2.fin()
+            
             
 
 
 
 
 
+
+
             #INICIA CARGA DE GLOBAL ESPACIADO TAMBIEN 
-            print("CARGA PARTE 3")
-            valorx = input() 
+            #print("CARGA PARTE 3")
+            #valorx = input() 
 
             i=0
             conexion2 = base.DB
             conexion2.start()
             #while global_datos.size>i :
-            while 50300>i :
-                sql = "CALL new_global (%s,%s,%s,%s,%s,%s,%s)";
+             
+            while len(global_datos)>i :
+                sql = "CALL new_global (%s,%s,%s,%s,%s,%s)";
                 ts=global_datos.iloc[i]
                 #SI DA ERROR AQUI SE PUEDE VER
                 #print(ts)
 
+                fecha_solo_fecha = ts["Date_reported"].date()
+                fecha_str = fecha_solo_fecha.strftime('%Y-%m-%d')
 
                 lista = [
-                        ts["Date_reported"] , 
-                        ts["Country"] , 
+                        fecha_str ,#ts["Date_reported"] , 
+                        #ts["Country"] , 
                         ts["WHO_region"] ,
                         int(ts["New_cases"]) ,
                         int(ts["Cumulative_cases"]) ,
@@ -166,24 +177,36 @@ def menu():
                         int(ts["Cumulative_deaths"])
                     ]
  
-                print(lista)
+                #print(lista)
 
+
+                #try:
                 result = conexion2.query(sql,lista)
+                #except:
+                    #print("Error en grupo:"+str(int(i/50))+" , Linea: "+str(i)) 
+                    #conexion.roll()
 
-                if i%50000 == 0 :
-                    print("50k registros guardados ,presione para continuar")
-                    conexion2.save()
-                    valorx = input() 
-                    
 
                 i=i+1
 
+            conexion2.save()
             conexion2.fin()
 
+            '''
 
-        elif valor == '3' :
+            '''
 
-            print("algo")
+
+
+        elif valor == '2' :
+
+            globalT=copy.deepcopy(global_datos)
+            localT=copy.deepcopy(local_datos)
+
+            # Unión por la izquierda basada en las columnas 'fechax' y 'fechay'
+            df_merged = pd.merge(globalT, localT, left_on='Date_reported', right_on='fecha', how='right')
+
+            print(df_merged)
 
 
         elif valor == '4' :

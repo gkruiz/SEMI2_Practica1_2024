@@ -1,13 +1,3 @@
-SELECT user, authentication_string, plugin, host FROM mysql.user;
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'secure_pass_here';
-FLUSH PRIVILEGES;
-
-
-
-FLUSH PRIVILEGES;
-CREATE USER kruiz@localhost IDENTIFIED BY 'secure_pass_here';
-grant all privileges on *.* to kruiz@localhost with grant option;
-FLUSH PRIVILEGES;
 
 create database PRACTICA1;
 
@@ -16,63 +6,60 @@ use PRACTICA1;
 
 
 
-
-
-
-
 #INICIA CREACION DE TABLAS
 
-CREATE TABLE pais(
-	id_pais INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	nombre varchar (100) NOT NULL
+CREATE TABLE fecha (
+	id_fecha INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	fecha DATE NOT NULL
 );
 
 CREATE TABLE global (
-	Date_reported varchar(50) NOT NULL,
-    id_pais INT NOT NULL, #LLAVE FORANEA
+	#Date_reported varchar(50) NOT NULL,
+    id_fecha INT NOT NULL, #LLAVE FORANEA
     WHO_region varchar (10) NOT NULL,
     New_cases INT NOT NULL,
     Cumulative_cases INT NOT NULL,
     New_deaths INT NOT NULL,
     Cumulative_deaths INT NOT NULL ,
-	FOREIGN KEY (id_pais) REFERENCES pais(id_pais)
+	FOREIGN KEY (id_fecha) REFERENCES fecha(id_fecha)
 );
  
 
 CREATE TABLE local(
-	id_pais INT NOT NULL,
+	id_fecha INT NOT NULL,
 	departamento varchar (100) NOT NULL,
 	municipio varchar (100) NOT NULL , 
 	poblacion INT NOT NULL,
-	fecha DATE NOT NULL,
+	#fecha DATE NOT NULL,
 	valor INT NOT NULL ,
-    FOREIGN KEY (id_pais) REFERENCES pais(id_pais)
+    FOREIGN KEY (id_fecha) REFERENCES fecha(id_fecha)
 );
 
 
 
 #PROCEDURE PARA GUARDAR LA INFO DE NUEVO PAIS 
 
-DROP PROCEDURE new_pais;
+DROP PROCEDURE new_fecha;
+
+CALL new_fecha('20240102')
+
+select * from fecha
 
 DELIMITER &&  
-CREATE PROCEDURE new_pais (IN paisp varchar(100))
-       BEGIN
-		DECLARE EXIT HANDLER FOR SQLEXCEPTION
+CREATE PROCEDURE new_fecha (IN fechap DATE)
 		BEGIN
-			ROLLBACK;
-			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error inserting user';
-			END;
-		START TRANSACTION;
+		DECLARE rs INT;
+		
+		SELECT count(id_fecha) INTO rs FROM fecha WHERE fecha = fechap;
         
-		INSERT INTO pais(nombre)VALUES(paisp);
-        
-        COMMIT;
+        #Si no existe la fecha la inserta y crea
+        IF rs = 0 THEN
+			INSERT INTO fecha(fecha)VALUES(fechap);
+		END IF;
 END &&  
 DELIMITER ;   
 
-select * from pais
-truncate table pais
+
 
 
 
@@ -82,8 +69,8 @@ DROP PROCEDURE new_global;
 
 DELIMITER &&  
 CREATE PROCEDURE new_global (
-	IN Date_reported VARCHAR(50) ,
-    IN Country VARCHAR(100) ,
+	IN Date_reported DATE ,
+    #IN Country VARCHAR(100) ,
 	#IN id_pais INT,
     IN WHO_region VARCHAR(10) ,
     IN New_cases INT ,
@@ -92,43 +79,82 @@ CREATE PROCEDURE new_global (
     IN Cumulative_deaths INT 
 )
        BEGIN
+	   DECLARE id_fechaG INT;
        
-         INSERT INTO global VALUES(
-         	Date_reported ,
-			(select id_pais from pais WHERE nombre = Country limit 1) ,#id_pais,
+		SELECT id_fecha INTO id_fechaG FROM fecha WHERE fecha = Date_reported;
+       
+		INSERT INTO global VALUES(
+         	id_fechaG ,
 			WHO_region ,
 			New_cases ,
 			Cumulative_cases ,
 			New_deaths ,
 			Cumulative_deaths 
-         );
+		);
+         
 END &&  
 DELIMITER ;   
 
 
 
-
+Drop procedure new_local;
 
 DELIMITER &&  
 CREATE PROCEDURE new_local (
-	IN id_pais INT,
+	IN fechaG DATE,
 	IN departamento varchar (100),
 	IN municipio varchar (100), 
 	IN poblacion INT,
-	IN fecha DATE,
 	IN valor INT
 )
        BEGIN
-         INSERT INTO local VALUES(
-			id_pais ,
+       DECLARE id_fechaG INT;
+       
+		SELECT id_fecha INTO id_fechaG FROM fecha WHERE fecha = fechaG;
+       
+		INSERT INTO local VALUES(
+			id_fechaG ,
 			departamento ,
 			municipio , 
 			poblacion ,
-			fecha ,
 			valor
-         );
+		);
 END &&  
 DELIMITER ;   
+
+
+
+ CREATE VIEW get_valores AS
+		select 
+		t0.fecha,
+		t1.WHO_region ,
+		t1.New_cases , 
+		t1.Cumulative_cases , 
+		t1.New_deaths , 
+		t1.Cumulative_deaths , 
+		CASE
+			WHEN t2.departamento  is null THEN ''
+			ELSE t2.departamento 
+		END AS departamento ,
+		#t2.departamento , 
+		CASE
+			WHEN t2.municipio  is null THEN ''
+			ELSE t2.municipio 
+		END AS municipio ,
+		#t2.municipio , 
+		CASE
+			WHEN t2.poblacion  is null THEN 0
+			ELSE t2.poblacion 
+		END AS poblacion ,
+		#t2.poblacion , 
+		CASE
+			WHEN t2.valor  is null THEN 0
+			ELSE t2.valor 
+		END AS valor  
+		#t2.valor 
+		from fecha t0
+		left join global t1 on t0.id_fecha = t1.id_fecha
+		left join local t2 on t1.id_fecha = t2.id_fecha ;
 
 
 
@@ -136,18 +162,26 @@ DELIMITER ;
 
 select count(*) from global;
 select count(*) from local ;
-select count(*) from pais;
+select count(*) from fecha;
  
 
 
 #QUERYS DE ELIMINACION Y BORRAR
  
-truncate table pais;
+truncate table fecha;
 truncate table global; 
 truncate table local;
 
 
-DROP TABLE pais;
+DROP TABLE fecha;
 DROP TABLE global;
 DROP TABLE local;
+
+----------------
+
+
+
+
+
+
 
