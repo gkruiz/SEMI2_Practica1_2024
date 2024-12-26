@@ -1,4 +1,4 @@
-## Practica 1 - Seminario de Sistemas 2
+## Proyecto 1 - Seminario de Sistemas 2
 <br>
 <br>
 <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Usac_logo.png" width="300px" align="center">
@@ -7,46 +7,47 @@
 
 ### Introduccion 
 
-La siguiente practica tuvo la finalidad de poner a prueba los conocimientos adquiridos para el manejo de informacion haciendo uso de diferentes fuentes , en este caso usamos excel para la carga de la informacion ademas de usar el lenguaje de programacion
-python para el analisis de los datos ,asi mismo usamos las librerias como panda para el manejo de los datos ya cargados ,asi tambien para la depuracion y limpieza de los mismo , posterior a su analisis y limpieza se procedio a 
-cargar estos a una base de datos mysql esta levantada en una instacia de docker
+El siguiente proyecto tuvo como finalidad el poner en practica los conocimientos en analisis de datos haciendo uso de Python con las librerias panda o Mathiplot y consumiendo datos desde la base de datos , se analizo la informacion y se llegaron a ciertas conclusiones las cuales se describiran mejor en el reporte ipynb
 
 
 ### Diagrama ER
 
-<img src="https://github.com/gkruiz/SEMI2_Practica1_2024/blob/master/IMAGENES/diagrama.png?raw=true" width="800px">
+<img src="https://github.com/gkruiz/SEMI2_Practica1_2024/blob/proyecto_1/IMAGENES/nuevo_diagrama.png?raw=true" width="800px">
 
-Para el desarrollo de esta practica , se hizo uso el siguiente diagrama que cuenta con 3 entidades ,Pais ,General , Local ,en las cuales se guardara la informacion depurada por las libreria panda y demas funciones asociadas,
+Para el desarrollo de esta practica , se hizo uso el siguiente diagrama que cuenta con 3 entidades ,Fecha ,General , Local ,en las cuales se guardara la informacion depurada por las libreria panda y demas funciones asociadas,
 para el caso de el dataset LOCAL se excluyeron las columnas CODIGO-DEPARTAMENTO ,CODIGO-MUNICIPIO , para el dataset GLOBAL se quitaron las columnas COUNTRY-CODE 
 
 
-### Descripcion de Limpieza de datos
+### Descripcion Modificaciones Diagrama
 
-para iniciar el proceso de limpieza de informacion ,se procedio primero a realizar la carga de los respectivos exceles el de LOCAL se realizo la carga desde la pc , y la carga del archivo GLOBAL se realizo la carga desde un
-archivo en la nube
+se hicieron modificaciones al diagrama ER pues estaba malo en algunos aspectos ,pues la union tenia que ser con el campo fecha y no con el campo pais , se tomo como catalogo principal la columna fecha , a la cual se le podia asociar tanto un grupo de registros que pertenecieran a diferentes departamentos y municipios como tambien que le pudiera pertenecer a unicamente un dia en especifico que tuviera el total del dia , con esto se evita la redundacia de los datos en este caso fechas y se tiene un pivote principal que seria la tabla fecha 
 
-#### Paso 1
+#### Observaciones 
 
-se procedio a realizar la carga del archivo para el caso del LOCAL,se quito la columna CODIGO-DEPARTAMENTO ,CODIGO-MUNICIPIO ,luego de eso se procedio a convertir las columnas en filas para el caso de las fechas
-para poder ser analizadas posterior a eso se procedio a estandarizar la columna de fecha a un unico formato para poder realizar correctamente la union entre los dos dataframes, tambien todos los elementos que no tuvieran como
-ano el 2020 fueron excluidos para usos practicos del analisis
+para este analisis se observo que los datos obtenidos GLOBAL ,lo datos cuadran y son secuenciales , con respecto a nuevos casos y sumatoria de casos , tambien nuevas muertes y sumatoria de muertes , caso contrario para los datos DEPARTAMENTOS , para este caso , pueden o no haber registros asociados por dia ,por lo que hay faltantes
 
-#### Paso 2
+#### Analisis  
+para este caso ,se evitaron los datos vacios que no aportaran al analisis si era necesario ,tambien se eliminaron todos los valores repetidos y asi mismo se valido que los datos coincidieran con la fecha que le correspondia ,luego de eso se procedio a realizar conteo de datos para verificar que si se hubieran obtenido todos los datos de manera correcta.
 
-se procedio a realizar la carga del archivo para el caso de GLOBAL, se quito la columna COUNTRY-CODE ,luego de eso se procedio a realizar un filtraje por pais y dejar solo los elementos de GUATEMALA , 
-posterior a eso , se dio formato a las columnas y se estandarizo tambien el campo de fecha para poder realizar la union entre los dos dataframes ,posterior a eso , se realizo un filtraje donde solo hubieran elementos 
-que estuvieran durante al ano 2020 y los demas elementos fueron excluidos 
+se hizo uso de pandas para el analis de los datos tambien de la herramienta de Mathiplot para graficar los datos en el archivo ipynb ,todo en el lenguaje python.
 
-#### Paso 3
+Se aplicaron calculos estadisticos como cuartiles, desviacion estandar , maximos ,minimos , conteo de datos y otros para tener mas informacion sobre la data 
 
-se procedio a realizar la union de los 2 dataframes y asi hacer converger la informacion en un unico dataset
+### Estadisticas Monovariable Ejemplos
 
-#### Paso 4
+#### Imagen de estadistica nuevas muertes con Cuartiles
 
-se procedio a distribuir la informacion en las tablas correspondientes asi mismo se uso el commit y rollback para el manejo de transacciones y evitar tener informacion erronea en la base de datos
+<img src="https://github.com/gkruiz/SEMI2_Practica1_2024/blob/proyecto_1/IMAGENES/MONOVARIABLE/nmc.png?raw=true" width="500px">
 
 
+#### Imagen de estadistica pais con Cuartiles
 
+<img src="https://github.com/gkruiz/SEMI2_Practica1_2024/blob/proyecto_1/IMAGENES/MONOVARIABLE/pc.png?raw=true" width="500px">
+
+
+#### Imagen de estadistica acumulado muertes con Cuartiles
+
+<img src="https://github.com/gkruiz/SEMI2_Practica1_2024/blob/proyecto_1/IMAGENES/MONOVARIABLE/amc.png?raw=true" width="500px">
 
 
 
