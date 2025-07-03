@@ -15,13 +15,16 @@ para luego usar la herramienta Jupiter Notebook para el analisis y contruccion d
 
 <img src="https://raw.githubusercontent.com/gkruiz/SEMI2_Practica1_2024/refs/heads/master/IMAGENES/jupi.png" width="500px" align="center">
 
+
 posteriormente usamos la herramienta de power bi para la presentacion de dashboards mas completos donde se publico en un servidor local para luego tambien aplicarle filtros personalizados dependiendo el tipo de grafico que se quisiera ver
+
+* <a href="https://github.com/gkruiz/SEMI2_Practica1_2024/tree/proyecto_1"><B>ABRIR PROYECTO 1</B> </a>
 
 <img src="https://raw.githubusercontent.com/gkruiz/SEMI2_Practica1_2024/refs/heads/master/IMAGENES/power.png" width="500px" align="center">
 
+* <a href="https://github.com/gkruiz/SEMI2_Practica1_2024/tree/proyecto_2"><B>ABRIR PROYECTO 2</B> </a>
 
-
-para todo esto se usaron conceptos de analisis de datos para la presentacion de datos finales, para gerencia u alguna otra area dependiendo el caso
+para todo esto se usaron conceptos de analisis de datos para la presentacion de datos finales, para gerencia u alguna otra area dependiendo el caso, cada fase posee su documentacion y codigo fuente 
 
 
 
